@@ -40,7 +40,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const PORT = Number(process.env.PORT || 3000);
 const API_KEY = process.env.API_FOOTBALL_KEY;
 const API_BASE = "https://v3.football.api-sports.io";
-const MODEL_VERSION = "V7.2";
+const MODEL_VERSION = "V7.3";
 const CACHE_TTL_MS = 10 * 60 * 1000;
 const cache = new Map();
 let apiCalls = 0;
@@ -678,19 +678,24 @@ function implied(odd){
 
 function shouldNoBet(top,m,hfN,afN,hfFresh,afFresh){
   if(!top) return {noBet:true,reason:"Aucun marché disponible"};
-  const p=Number(top.probability)||0;
-  const edge=top.edge==null?null:Number(top.edge);
   const homeN=Math.min(Number(hfN)||0,10);
   const awayN=Math.min(Number(afN)||0,10);
-  const countQuality=(homeN+awayN)/20; const freshnessHome=hfFresh?.fresh?1:0; const freshnessAway=afFresh?.fresh?1:0; const freshnessQuality=(freshnessHome+freshnessAway)/2; const dataQuality=countQuality*freshnessQuality;
-  const marketProbability=Number(top.probability)||0; const modelConfidence=Number(m?.confidence)||0; const confidence=modelConfidence;
+  if(homeN<3 || awayN<3) return {noBet:true,reason:"Historique insuffisant : minimum 3 matchs récents par équipe",dataQuality:(homeN+awayN)/20};
+  const p=Number(top.probability)||0;
+  const edge=top.edge==null?null:Number(top.edge);
+  const countQuality=(homeN+awayN)/20;
+  const freshnessHome=hfFresh?.fresh?1:0;
+  const freshnessAway=afFresh?.fresh?1:0;
+  const freshnessQuality=(freshnessHome+freshnessAway)/2;
+  const dataQuality=countQuality*freshnessQuality;
+  const modelConfidence=Number(m?.confidence)||0;
+  const confidence=modelConfidence;
   const agreement=m?.agreement==null?null:Number(m.agreement);
   if(dataQuality<0.55) return {noBet:true,reason:"Qualité des données insuffisante (<55%)",dataQuality,confidence,agreement};
   if(confidence<0.50) return {noBet:true,reason:"Confiance interne insuffisante (<50%)",dataQuality,confidence,agreement};
   if(agreement!=null && agreement<0.48) return {noBet:true,reason:"Accord modèles insuffisant (<48%)",dataQuality,confidence,agreement};
-  if(p<0.55) return {noBet:true,reason:"Probabilité insuffisante"};
-  if(edge!=null && edge<0) return {noBet:true,reason:"Pas de value détectée"};
-  if(homeN<3 || awayN<3) return {noBet:true,reason:"Historique insuffisant"};
+  if(p<0.55) return {noBet:true,reason:"Probabilité insuffisante",dataQuality,confidence,agreement};
+  if(edge!=null && edge<0) return {noBet:true,reason:"Pas de value détectée",dataQuality,confidence,agreement};
   return {noBet:false,reason:"Conditions minimales satisfaites",dataQuality,confidence,agreement};
 }
 function cornersFromFixture(f,id){
