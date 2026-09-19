@@ -1,0 +1,5 @@
+.env
+predictions.sqlite
+predictions.sqlite.backup
+.api_quota.json
+node_modules/
