@@ -373,7 +373,7 @@ function summarize(fixtures,id,venue){
 }
 function recordPrediction(a,pick){
   const now=new Date().toISOString();
-  const r=db.prepare(`SELECT id FROM predictions WHERE fixture_id=? AND market=? AND selection=? AND status='PENDING'`)
+  const r=db.prepare(`SELECT id FROM predictions WHERE fixture_id=? AND market=? AND selection=?`)
     .get(a.fixture.fixture.id,pick.market,pick.selection);
   if(r)return r.id;
   const exactJson=pick.market==="Exact Score" ? JSON.stringify(a.model.score||[]) : null;
@@ -683,7 +683,7 @@ function shouldNoBet(top,m,hfN,afN,hfFresh,afFresh){
   const homeN=Math.min(Number(hfN)||0,10);
   const awayN=Math.min(Number(afN)||0,10);
   const countQuality=(homeN+awayN)/20; const freshnessHome=hfFresh?.fresh?1:0; const freshnessAway=afFresh?.fresh?1:0; const freshnessQuality=(freshnessHome+freshnessAway)/2; const dataQuality=countQuality*freshnessQuality;
-  const marketProbability=Number(top.probability)||0; const modelConfidence=Number(m?.confidence)||0; const confidence=clamp(marketProbability*0.60 + modelConfidence*0.20 + (m?.agreement==null ? marketProbability : Number(m.agreement))*0.20);
+  const marketProbability=Number(top.probability)||0; const modelConfidence=Number(m?.confidence)||0; const confidence=modelConfidence;
   const agreement=m?.agreement==null?null:Number(m.agreement);
   if(dataQuality<0.55) return {noBet:true,reason:"Qualité des données insuffisante (<55%)",dataQuality,confidence,agreement};
   if(confidence<0.50) return {noBet:true,reason:"Confiance interne insuffisante (<50%)",dataQuality,confidence,agreement};
