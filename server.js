@@ -233,7 +233,8 @@ async function recentTeamHistory(teamId,limit=10,excludeId=null,beforeDate=null)
   if(apiQuotaExhausted) return cachedRecentTeam(teamId,limit,excludeId,beforeDate);
   let local=cachedRecentTeam(teamId,limit,excludeId,beforeDate);
 
-  const currentYear=new Date().getUTCFullYear();
+  if(local.length>=limit) return local;
+ const currentYear=new Date().getUTCFullYear();
 
   for(const season of [currentYear,currentYear-1,currentYear-2]){
     try{
