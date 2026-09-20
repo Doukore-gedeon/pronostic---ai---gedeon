@@ -1,6 +1,6 @@
 {
   "name": "pronostic-ia-gedeon-v7",
-  "version": "7.1.0",
+  "version": "7.4.0",
   "private": true,
   "description": "Analyse football avec calibration, NO BET, corners, value et suivi empirique.",
   "main": "server.js",
