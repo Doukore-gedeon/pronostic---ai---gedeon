@@ -1,5 +1,36 @@
 .env
-predictions.sqlite
-predictions.sqlite.backup
-.api_quota.json
 node_modules/
+*.apk
+*.zip
+*.obb
+OBB/
+com.ea.gp.fifaworld/
+.pending-*
+predictions.sqlite*
+*.bak
+*.bak*
+*.backup
+*.backup*
+*.before*
+server*.final
+server*.PARTIEL*
+server.js.*
+server_backup*.js
+server\ (1).js
+server\ (2).js
+server.js\ (1)
+server.js\ (2)
+server.log
+page-test.js
+test-*.js
+today*.json
+public/*.bak
+public/*.before*
+France\ Commentary/
+*.html
+public/index.V7.4.final.html
+1XBET*
+1win_*
+Barça-*
+MOD CREATOR*
+Samsung Privacy Policy*

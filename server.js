@@ -40,7 +40,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const PORT = Number(process.env.PORT || 3000);
 const API_KEY = process.env.API_FOOTBALL_KEY;
 const API_BASE = "https://v3.football.api-sports.io";
-const MODEL_VERSION = "V7.3";
+const MODEL_VERSION = "V7.4";
 const CACHE_TTL_MS = 10 * 60 * 1000;
 const cache = new Map();
 let apiCalls = 0;
