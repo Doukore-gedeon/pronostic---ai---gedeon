@@ -642,36 +642,37 @@ function marketList(m,hf,af){
 
 function findOdds(odds,market,selection){
   if(!odds) return null;
+  const list=Array.isArray(odds)?odds:(odds.response||odds.bookmakers||[]);
+  const wm=String(market||"").toLowerCase();
+  const ws=String(selection||"").toLowerCase();
 
-  const list=Array.isArray(odds)
-    ? odds
-    : (odds.response||odds.bookmakers||[]);
+  const cfg={
+    "1x2":{bets:["match winner","fulltime result"],map:{"1":"home","x":"draw","2":"away"}},
+    "double chance":{bets:["double chance"],map:{"1x":"home/draw","x2":"draw/away","12":"home/away"}},
+    "over/under":{bets:["goals over/under"]},
+    "btts":{bets:["both teams score","both teams to score"]},
+    "exact score":{bets:["exact score"]}
+  }[wm];
+
+  if(!cfg) return null;
+  const target=cfg.map ? cfg.map[ws] : (wm==="exact score" ? ws.replace("-",":") : ws);
 
   for(const item of list){
-    const bookmakers=item.bookmakers||[item];
+    for(const bookmaker of (item.bookmakers||[item])){
+      for(const bet of (bookmaker.bets||[])){
+        const bn=String(bet.name||"").toLowerCase();
+        if(!cfg.bets.includes(bn)) continue;
 
-    for(const bookmaker of bookmakers){
-      const bets=bookmaker.bets||[];
-
-      for(const bet of bets){
-        const values=bet.values||[];
-
-        for(const v of values){
+        for(const v of (bet.values||[])){
           const name=String(v.value||v.name||"").toLowerCase();
-          const sel=String(selection||"").toLowerCase();
-
-          if(name===sel || name.includes(sel) || sel.includes(name)){
-            const odd=Number(v.odd);
-            if(Number.isFinite(odd) && odd>0) return odd;
-          }
+          const odd=Number(v.odd);
+          if(name===target && Number.isFinite(odd) && odd>1 && odd<100) return odd;
         }
       }
     }
   }
-
   return null;
 }
-
 function implied(odd){
   const o=Number(odd);
   return Number.isFinite(o) && o>0 ? 1/o : null;
